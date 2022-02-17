@@ -6,6 +6,7 @@ const env = process.env.NODE_ENV || "development";
 
 /**
  * Mongoose Connection
+ * This is a basic setup... a secret manager would be used to connect to mongoDB
 **/
 
 mongoose.connect(environment[env].dbString, {
