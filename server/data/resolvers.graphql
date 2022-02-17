@@ -1,0 +1,109 @@
+import {Recipes,Users} from '../db/dbConnector.js'
+
+/**
+* GraphQL Resolvers 
+**/
+
+export const resolvers={
+    Query:{
+            getAllRecipes:(root)=>{
+                return new Promise((resolve,reject)=>{
+                    Recipes.find((err,recipes)=>{
+                        if(err) reject(err);
+                        else resolve(recipes);
+                    })
+                })
+            },
+            getOneRecipe:(root,{id})=>{
+                return new Promise((resolve,reject)=>{
+                    Recipes.findOne({_id:id},(err,recipe)=>{
+                    if(err) reject(err);
+                    else resolve(recipe);
+                })
+            })
+        }
+    },
+
+    Mutation:{
+        createRecipe: (root,{ input }) => {
+            const newRecipe = new Recipes({
+                name: input.name,
+                ingredients: input.ingredients, 
+                steps: input.steps,
+                tags: input.tags,
+                imageURL: input.imageURL,
+                originalURL: input.originalURL,
+                createdBy: input.createdBy,
+                likes: input.likes,
+                shares: input.shares
+            });
+            newRecipe.id = Recipes._id;
+
+
+            return new Promise((resolve,reject)=>{
+                newRecipe.save(err=>{
+                    if(err) reject(err);
+                    resolve(newRecipe);
+                })
+            });
+        },
+
+        createUser:(root,{input})=>{
+            const newUser = new Users({
+                
+                username: input.username,
+                password: input.password,
+                name: input.name,
+                profilePic: input.profilePic,
+                recipes: input.recipes,
+                favourites: input.favourites
+            
+            });
+
+            newUser.id = Users._id;
+
+
+            return new Promise((resolve,reject)=>{
+                newUser.save(err=>{
+                    if(err) reject(err);
+                    resolve(newUser);
+                })
+            })
+
+
+        },
+
+        engagement:(root, {id,type})=>{
+            return new Promise((resolve,reject)=>{
+                    if(type === "likes"){
+
+                        Recipes.findOneAndUpdate({_id: id}, {$inc : {likes : 1}},
+                         (err,recipe) =>{
+                            if(err)
+                                reject(err);
+                            if(recipe)
+                                resolve(recipe);
+                         });
+                       
+                    }
+                    else if( type === "shares"){
+
+                        Recipes.findOneAndUpdate({_id: id}, {$inc : {shares : 1}},
+                         (err,recipe) =>{
+                            if(err)
+                                reject(err);
+                            if(recipe)
+                                resolve(recipe);
+                         });
+                    }
+                    else
+                        reject("engagement type not found");
+                        
+            })      
+                    
+        
+        },
+
+        
+    },
+};

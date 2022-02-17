@@ -1,0 +1,74 @@
+import { gql } from 'apollo-server-express';
+
+
+export const typeDefs = gql`
+    
+    type User {
+        id: ID,
+        username:String!,
+        password:String!,
+        name:String!,
+        profilePic:String,
+        recipes:[Recipe],
+        favourites:[Recipe]
+    
+    }
+
+    type Recipe {
+        id:ID,
+        name:String,
+        ingredients:[String], 
+        steps:[String],
+        tags:[String],
+        imageURL:String,
+        originalURL:String,
+        createdBy:String,
+        likes:Int,
+        shares:Int
+    
+    } 
+
+
+    input UserInput{
+        id:ID,
+        username:String!,
+        password:String!,
+        name:String!,
+        profilePic:String,
+        recipes:[RecipeInput],
+        favourites:[RecipeInput]
+    
+    
+    }
+
+    input RecipeInput{
+        id:ID,
+        name:String,
+        ingredients:[String]!, 
+        steps:[String]!,
+        tags:[String]!,
+        imageURL:String!,
+        originalURL:String,
+        createdBy:String,
+        likes:Int,
+        shares:Int
+    
+    
+    }
+
+    type Query{
+        
+        getAllRecipes:[Recipe!],
+        getOneRecipe(id: String):Recipe!
+        
+        
+    
+    }
+
+    type Mutation{
+        createRecipe(input:RecipeInput):Recipe,
+        createUser(input:UserInput):User,
+        engagement(id:String, type:String): Recipe
+    }
+
+`;
